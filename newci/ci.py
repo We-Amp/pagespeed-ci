@@ -14,6 +14,7 @@ import json
 import logging
 from multiprocessing import Lock
 import requests
+from datetime import datetime
 
 # Set up some global variables
 WORK_QUEUE = Queue()
@@ -61,13 +62,14 @@ class CiWorker(object):
             return
         self.prepared = True
         self.is_authorized = self.verify_ref(self.ref, self.commit)
+        api_user = self.repo["api_user"]
+        
         if not self.is_authorized:
             return
         tmp = self.ref.split("/")
         pr_number = tmp[2]
         if len(tmp) == 4 and tmp[0] == "refs" and tmp[1] == "pull":
             self.is_authorized = False
-            api_user = self.repo["api_user"]
             url = "%s/pulls/%s" % (self.repo["status_api"], pr_number)
             res = requests.get(url, auth=(api_user, API_TOKEN))
             if res.status_code != 200:
@@ -95,6 +97,16 @@ class CiWorker(object):
             if self.status_commit != self.commit:
                 if tmp[3] != "merge":
                     raise Exception('status updated unexpectedly!')
+        url = "%s/commits/%s" % (self.repo["status_api"], self.commit)
+        res = requests.get(url, auth=(api_user, API_TOKEN))
+        if res.status_code != 200:
+            print("Git api get failed: [%s] (%s)" % (url, res.status_code))
+            return False, ""
+        json = res.json()
+        present = datetime.now()
+        if (present - datetime.strptime(json["commit"]["committer"]["date"], "%Y-%m-%dT%H:%M:%SZ")).days >= 1:
+            print("commit is too old is too old")
+            return False
     
 
     def run(self, thread_index):
