@@ -18,4 +18,5 @@ CLOUDSDK_COMPUTE_ZONE=us-east1-c ./ci_run.sh --build_branch 35 --script=checkin_
 
 
 Start webserver:
+Install .net core: https://www.microsoft.com/net/learn/get-started/linuxubuntu
 $/var/www/ci/MPSCI⟫ dotnet restore && ASPNETCORE_ENVIRONMENT=Development dotnet run

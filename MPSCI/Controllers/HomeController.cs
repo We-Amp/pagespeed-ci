@@ -16,7 +16,7 @@ namespace MPSCI.Controllers
         {
             string cidir = "/home/oschaaf/ci-out/";
             System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(cidir);
-            System.IO.DirectoryInfo dx = new System.IO.DirectoryInfo("/home/oschaaf/newci/");
+            System.IO.DirectoryInfo dx = new System.IO.DirectoryInfo("../newci/");
             List<string> refs = new List<string>();
 
             foreach (var f in dx.GetFiles())
