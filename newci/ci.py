@@ -22,6 +22,7 @@ POLL_IGNORE_COMMITS = dict()
 BUSY_SHAS = dict()
 STOPPED = False
 LOCK = Lock()
+API_TOKEN=""
 
 class CiWorker(object):
     """ CI Worker doc """
@@ -43,10 +44,10 @@ class CiWorker(object):
 
 
     def verify_ref(self, ref, commit):
+        global API_TOKEN
         url = "%s/git/%s" % (self.repo["status_api"], ref)
         api_user = self.repo["api_user"]
-        api_token = self.repo["api_token"]
-        res = requests.get(url, auth=(api_user, api_token))
+        res = requests.get(url, auth=(api_user, API_TOKEN))
         print(url)
         print("verify %s/%s -? %s\n:%s" % (self.ref, self.commit, res.status_code, res.text))
 
@@ -55,6 +56,7 @@ class CiWorker(object):
         return commit in res.text
 
     def prepare(self, status_api_url, approved_authors):
+        global API_TOKEN
         if self.prepared:
             return
         self.prepared = True
@@ -66,9 +68,8 @@ class CiWorker(object):
         if len(tmp) == 4 and tmp[0] == "refs" and tmp[1] == "pull":
             self.is_authorized = False
             api_user = self.repo["api_user"]
-            api_token = self.repo["api_token"]
             url = "%s/pulls/%s" % (self.repo["status_api"], pr_number)
-            res = requests.get(url, auth=(api_user, api_token))
+            res = requests.get(url, auth=(api_user, API_TOKEN))
             if res.status_code != 200:
                 print("Git api get failed: [%s] (%s)" % (url, res.status_code))
                 return False, ""
@@ -144,8 +145,7 @@ class CiWorker(object):
             git_state = "success"
 
         api_user = self.repo["api_user"]
-        api_token = self.repo["api_token"]
-
+        global API_TOKEN
         if git_state and self.repo["update_git_status"]:
             print("update git:  %s -> %s (%s)" % (self.status_commit, git_context, git_state))
             url = "%s/statuses/%s" % (self.repo["status_api"], self.status_commit)
@@ -154,7 +154,7 @@ class CiWorker(object):
   "description": "{git_state}",
   "context": "{git_context}"
 """.format(git_state=git_state, git_context=git_context, commit=self.commit)
-            res = requests.post(url, data=("{%s}" % data), auth=(api_user, api_token))
+            res = requests.post(url, data=("{%s}" % data), auth=(api_user, API_TOKEN))
             if res.status_code != 201:
                 print("status updated failed for url %s (%s)" % (url, res.status_code))
 
@@ -175,6 +175,12 @@ def load_configuration(path):
         raw_content = content_file.read()
         parsed = json.loads(raw_content)
         return parsed
+
+def load_token(path):
+    """ loads the program configuration """
+    with open(path, 'r') as content_file:
+        return content_file.read()
+
     
 class Repo(object):
     """ Holds state and defines CI for a repo """
@@ -278,8 +284,9 @@ def test_runner(self):
 def run_program():
     """tst"""
     global STOPPED
-
+    global API_TOKEN
     conf = load_configuration("ci.conf")
+    API_TOKEN = load_token(".token")
     load_ignore_lists()
 
     # TODO(oschaaf): we shouldn't mark them all as done.
