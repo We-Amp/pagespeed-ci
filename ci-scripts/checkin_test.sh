@@ -1,3 +1,5 @@
+set -e
+set -x
 gcloud compute ssh "$machine_name" -- bash << EOF
   set -e
   set -x

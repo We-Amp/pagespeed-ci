@@ -154,6 +154,11 @@ do
   ((count++))
 done
 
-
-source $script
+export use_rpms
+export machine_name
+export ref
+export branch
+timeout 7200 ./$script
+exit_status=$?
 cleanup
+exit $exit_status
