@@ -7,7 +7,7 @@ gcloud compute ssh "$machine_name" -- bash << EOF
     sudo apt-get -y install git
   fi
 
-  export MAKEFLAGS=-j3
+  export MAKEFLAGS=-j4
   git config --global submodule.fetchJobs 8
 
   # CentOS 6's git is old enough that git clone -b <tag> doesn't work and

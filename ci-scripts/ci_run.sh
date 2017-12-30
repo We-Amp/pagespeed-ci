@@ -119,7 +119,8 @@ fi
 
 if [ -z "$instances" ] || ! $use_existing_machine; then
   gcloud compute instances create "$machine_name" \
-    --image-family="$image_family" --image-project="$image_project"
+	 --image-family="$image_family" --image-project="$image_project" \
+         --custom-cpu=2 --custom-memory=4GB
 fi
 
 mkdir -p ~/release
