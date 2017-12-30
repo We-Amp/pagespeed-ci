@@ -1,0 +1,30 @@
+﻿@model List<MPSCI.Models.Commit>
+@{
+    ViewData["Title"] = "PageSpeed CI Home";
+}
+
+<h1>PageSpeed CI</h1>
+    
+<div class="row">
+    <div class="">
+        <table>
+            <tr style="border-bottom: 1px solid black; background-color: navy; font-weight: bold; color:white;">
+                <td>Last Change</td>
+                <td>Commit</td>
+                <td>State</td>
+            </tr>
+                @foreach (MPSCI.Models.Commit commit in Model)
+                {
+                    <tr valign="top" style="border-bottom: 1px dashed silver;">
+                        <td>@commit.files.First().LastWriteTime.ToLocalTime()</td>
+                        <td></td>
+                        <td><a href="/builds/@commit.project/@commit.sha">
+                            @commit.project @commit.tag <br />
+                            @commit.sha                          
+                            </a></td>
+                        <td valign="top">@Html.Raw(commit.Status)</td>
+                    </tr>
+                }
+        </table>
+    </div>
+</div>

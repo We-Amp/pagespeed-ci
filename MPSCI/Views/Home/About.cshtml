@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Test details";
+}
+<h2>@ViewData["project"] / @ViewData["test"]</h2>
+<h3>@ViewData["sha"]</h3>
+<a target="_blank" href="/builds/@ViewData["project"]/@ViewData["sha"]/">click here for full logs and artifacts for this commit</a><br/>
+<button onclick="stopped = true;">stop refresh</button>
+<script>
+    var stopped = false;
+    setTimeout("if (!stopped) document.location.reload()", 2500);
+</script>
+<h3>reversed tail:</h3>
+@using (Html.BeginForm())
+{
+        <input type="submit" value="restart" />
+}
+<pre>
+@Model
+</pre>
