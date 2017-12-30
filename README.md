@@ -4,6 +4,8 @@ PageSpeed CI Scripts
 
 Run CI Driver:
 
+Add .token file, containing API token for pagespeed-ci github user.
+Then, run:
 oschaaf@ps-ci:~/newci⟫ python3 ci.py 
 
 
