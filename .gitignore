@@ -325,3 +325,4 @@ ASALocalRun/
 #### own ignores
 *.token
 *ci-out*
+*#*
