@@ -11,3 +11,7 @@ sudo apt-get install python3
 echo "Please give a github OAuth token for accessing the api"
 read token
 echo token > newci/.token
+
+pushd MPSCI
+dotnet restore
+popd
