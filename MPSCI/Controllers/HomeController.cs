@@ -14,7 +14,7 @@ namespace MPSCI.Controllers
     {
         public IActionResult Index()
         {
-            string cidir = "/home/oschaaf/ci-out/";
+            string cidir = "../newci/ci-out/";
             System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(cidir);
             System.IO.DirectoryInfo dx = new System.IO.DirectoryInfo("../newci/");
             List<string> refs = new List<string>();
@@ -111,10 +111,10 @@ namespace MPSCI.Controllers
             ViewData["sha"] = sha;
             ViewData["test"] = test;
 
-            string stdout = GetLog("/home/oschaaf/ci-out/" + project + "/" + sha + "/" + test + ".stdout.txt", 1024 * 16);
+            string stdout = GetLog("../newci/ci-out/" + project + "/" + sha + "/" + test + ".stdout.txt", 1024 * 16);
             if (HttpContext.Request.Method == "POST")
             {
-                var ddd = "/home/oschaaf/ci-out/" + project + "/" + sha + "/";
+                var ddd = "../newci/ci-out/" + project + "/" + sha + "/";
                 foreach (var f in Directory.GetFiles(ddd))
                 {
                     var sub = f.Substring(ddd.Length);
