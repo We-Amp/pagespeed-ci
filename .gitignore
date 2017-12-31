@@ -320,3 +320,8 @@ ASALocalRun/
 
 # MSBuild Binary and Structured Log
 *.binlog
+
+
+#### own ignores
+*.token
+*ci-out*
