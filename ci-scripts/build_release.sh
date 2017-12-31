@@ -19,4 +19,4 @@ gcloud compute ssh "$machine_name" -- bash << EOF
   install/build_release.sh --verbose --skip_psol
 EOF
 
-gcloud compute copy-files "${machine_name}:mod_pagespeed/release/*" ~/release/
+# gcloud compute copy-files "${machine_name}:mod_pagespeed/release/*" ~/release/

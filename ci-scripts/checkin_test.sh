@@ -23,4 +23,4 @@ gcloud compute ssh "$machine_name" -- bash << EOF
   devel/checkin 
 EOF
 
-gcloud compute copy-files "${machine_name}:mod_pagespeed/release/*" ~/release/
+# gcloud compute copy-files "${machine_name}:mod_pagespeed/release/*" ~/release/

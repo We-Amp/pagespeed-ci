@@ -1,17 +1,36 @@
-# install dotnet
+echo install dotnet
 curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
 sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
 sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod xenial main" > /etc/apt/sources.list.d/dotnetdev.list'
 sudo apt-get update
 sudo apt-get install dotnet-sdk-2.0.2
 
+echo setup google cloud storage FUSE
+export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
+echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install gcsfuse
+
 # install python3
 sudo apt-get install python3
 
-echo "Please give a github OAuth token for accessing the api"
-read token
-echo token > newci/.token
+
+if [ ! -f newci/.token ]; then
+    echo "Please give a github OAuth token for accessing the api"
+    read token
+    echo token > newci/.token
+fi
 
 pushd MPSCI
 dotnet restore
 popd
+
+if [ ! -d newci/ci-out ]; then
+    pushd newci
+    mkdir ci-out
+    # Set up default service account
+    # gcloud auth application-default login
+    gcsfuse pagespeed-ci ci-out
+    popd
+fi
