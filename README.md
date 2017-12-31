@@ -13,9 +13,8 @@ oschaaf@ps-ci:~/newci⟫ python3 ci.py
 Sample runs:
 
 # Set the project of interest
-gcloud config set project hello-world-314
-
-CLOUDSDK_COMPUTE_ZONE=us-east1-c ./ci_run.sh --build_branch 35 --script=build_release.sh --centos
+gcloud config set project pagespeed-ci
+CLOUDSDK_COMPUTE_ZONE=us-east1-c ./ci_run.sh --ref=refs/pull/1696/merge  --build_branch=047e2c30d2ecc8c298594e676dad6db3cda8ec17 --script=build_release.sh --centos
 CLOUDSDK_COMPUTE_ZONE=us-east1-c ./ci_run.sh --build_branch 35 --script=checkin_test.sh
 
 

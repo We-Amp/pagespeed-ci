@@ -36,7 +36,7 @@ script=build_release.sh
 
 options="$(getopt --long build_branch:,centos,delete_existing_machine \
   --long image_family:,machine_name:,use_existing_machine \
-  --long script:, -o '' -- "$@")"
+  --long script:, --long ref:, -o '' -- "$@")"
 if [ $? -ne 0 ]; then
   echo"Usage: $(basename "$0") [options] -- [build_release.sh options]" >&2
   echo "  --build_branch=<branch>    mod_pagespeed branch to build" >&2
@@ -47,7 +47,7 @@ if [ $? -ne 0 ]; then
   echo "  --machine_name             VM name to create" >&2
   echo "  --use_existing_machine     Re-run build on exiting VM" >&2
   echo "  --script                   CI Script to run" >&2
-  echo "  --ref                      Git refspec" >&2
+  echo "  --ref=<ref>                Git refspec" >&2
   exit 1
 fi
 
@@ -58,7 +58,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --build_branch) branch="$2"; shift 2 ;;
     --script) script="$2"; shift 2 ;;
-    --ref) script="$2"; shift 2 ;;
+    --ref) ref="$2"; shift 2 ;;
     --centos) image_family="centos-6"; shift ;;
     --delete_existing_machine) delete_existing_machine=true; shift ;;
     --image_family) image_family="$2"; shift 2 ;;
@@ -69,6 +69,9 @@ while [ $# -gt 0 ]; do
     *) echo "getopt error" >&2; exit 1 ;;
   esac
 done
+
+echo "Building ref: $ref, branch $branch, script $script"
+
 
 if $use_existing_machine && $delete_existing_machine; then
   echo "Supply only one of --delete_existing_machine and" \
@@ -100,8 +103,8 @@ if [ -z "$machine_name" ]; then
   done
 
   # gcloud is pretty fussy about machine names.
-  sanitized_branch="$(tr _ - <<< "$branch" | tr -d .)"
-
+  sanitized_branch="$(tr _ - <<< "$branch" | tr -d . | cut -c 1-20)"
+  
   machine_name="${USER}-ci-${image_family}${bit_suffix}"
   machine_name+="-${sanitized_branch}-mps-build${bit_suffix}"
 fi
