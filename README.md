@@ -6,7 +6,7 @@ Run CI Driver:
 
 Add .token file, containing API token for pagespeed-ci github user.
 Then, run:
-oschaaf@ps-ci:~/newci⟫ python3 ci.py 
+oschaaf@ps-ci:~/newci⟫ sudo CLOUDSDK_COMPUTE_ZONE=us-east1-c python3 ci.py 
 
 
 
@@ -20,4 +20,4 @@ CLOUDSDK_COMPUTE_ZONE=us-east1-c ./ci_run.sh --build_branch 35 --script=checkin_
 
 Start webserver:
 Install .net core: https://www.microsoft.com/net/learn/get-started/linuxubuntu
-$/var/www/ci/MPSCI⟫ dotnet restore && ASPNETCORE_ENVIRONMENT=Development dotnet run
+$/var/www/ci/MPSCI⟫ dotnet restore && sudo dotnet run
