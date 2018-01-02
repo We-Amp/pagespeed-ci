@@ -6,7 +6,7 @@ Run CI Driver:
 
 Add .token file, containing API token for pagespeed-ci github user.
 Then, run:
-oschaaf@ps-ci:~/newci⟫ sudo CLOUDSDK_COMPUTE_ZONE=us-east1-c python3 ci.py 
+oschaaf@ps-ci:~/newci⟫ sudo python3 ci.py 
 
 
 
