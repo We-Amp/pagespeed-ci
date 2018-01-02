@@ -10,7 +10,13 @@ curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 
 sudo apt-get update
 sudo apt-get install dotnet-sdk-2.0.2
-sudo apt-get install gcsfuse
+sudo apt-get install gcsfuse authbind
+
+sudo touch /etc/authbind/byport/80
+sudo touch /etc/authbind/byport/443
+sudo chmod 777 /etc/authbind/byport/80
+sudo chmod 777 /etc/authbind/byport/443
+
 
 # install python3
 sudo apt-get install python3
@@ -26,11 +32,11 @@ pushd MPSCI
 dotnet restore
 popd
 
-if [ ! -d newci/ci-out ]; then
-    pushd newci
-    mkdir newci/ci-out
+#if [ ! -d newci/ci-out-gfs ]; then
+#    pushd newci
+#    mkdir newci/ci-out-gfs
     # Set up default service account
     # gcloud auth application-default login
-    popd
-fi
-sudo gcsfuse pagespeed-ci newci/ci-out
+#    popd
+#fi
+#gcsfuse pagespeed-ci newci/ci-out-gfs
