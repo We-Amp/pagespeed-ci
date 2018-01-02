@@ -123,7 +123,7 @@ fi
 if [ -z "$instances" ] || ! $use_existing_machine; then
   gcloud compute instances create "$machine_name" \
 	 --image-family="$image_family" --image-project="$image_project" \
-	 --zone=us-east1-c \\
+	 --zone=us-east1-c \
          --custom-cpu=2 --custom-memory=4GB
 fi
 
