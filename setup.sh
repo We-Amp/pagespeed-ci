@@ -33,4 +33,4 @@ if [ ! -d newci/ci-out ]; then
     # gcloud auth application-default login
     popd
 fi
-gcsfuse pagespeed-ci newci/ci-out
+sudo gcsfuse pagespeed-ci newci/ci-out
