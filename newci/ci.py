@@ -238,6 +238,7 @@ def git_poll_repo_worker(repos, interval_seconds, ci_out):
             with open("/tmp/ls-remote.in", "w") as fstdin:
                 with open("ls-remote-%s.log" % repo["id"], "w") as fstdout:
                     process = subprocess.Popen(command.split(), stdout=fstdout, stderr=subprocess.STDOUT, stdin=fstdin)
+            print("Got %s" % giruri)
             process.wait()
             if process.returncode:
                 print("ls-remote failed: %d" % process.returncode)
@@ -275,8 +276,10 @@ def setup_git_repo_polling(repos, interval_seconds, ci_out):
 def test_runner(self):
     """ Test execution, runs an the thread pool """
     #print "executing test_runner ---> %s" % self.to_str()
-    command = "./create_vm.sh --template %s --name ci-number-%d --script %s --ref %s --commit %s" % \
-        (self.template, self.thread_index, self.script, self.ref, self.commit)
+    #command = "./create_vm.sh --template %s --name ci-number-%d --script %s --ref %s --commit %s" % \
+    #    (self.template, self.thread_index, self.script, self.ref, self.commit)
+    command = self.script.format(branch=self.commit, ref=self.ref)
+    
     print("execute: %s" % command)
     fs_name = "%s/%s-%s" % (self.outdir, self.template, self.test["name"])
 
