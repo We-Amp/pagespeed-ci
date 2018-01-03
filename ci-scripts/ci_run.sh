@@ -126,9 +126,18 @@ if [ -z "$instances" ] || ! $use_existing_machine; then
          --custom-cpu=2 --custom-memory=4GB
 fi
 
-mkdir -p ~/release
+
+function savelog {
+    gcloud compute ssh "$machine_name" -- bash << EOF
+  echo "**** start dump logs"
+  cd /tmp
+  find . -name "*.log" -print0 | xargs -0 cat
+  echo "**** end dump logs"
+EOF
+}
 
 function cleanup {
+  savelog || true
   if ! $keep_machine; then
     echo -e "\nDelete GCE instance $machine_name"
     gcloud -q compute instances delete "$machine_name"
@@ -164,9 +173,5 @@ export ref
 export branch
 timeout 7200 ./$script
 exit_status=$?
-gcloud compute ssh "$machine_name" -- bash << EOF
-  cd /tmp
-  find . -name "*.log" -print0 | xargs -0 cat
-EOF
 cleanup
 exit $exit_status
