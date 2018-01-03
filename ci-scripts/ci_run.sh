@@ -123,15 +123,28 @@ gcloud config set compute/zone us-east1-c
 if [ -z "$instances" ] || ! $use_existing_machine; then
   gcloud compute instances create "$machine_name" \
 	 --image-family="$image_family" --image-project="$image_project" \
-         --custom-cpu=2 --custom-memory=4GB
+         --custom-cpu=2 --custom-memory=4GB \
+	 --boot-disk-type=pd-ssd
 fi
 
 
 function savelog {
     gcloud compute ssh "$machine_name" -- bash << EOF
   echo "**** start dump logs"
+
+  function dumplog() {
+    echo "#### start dump \$1"
+    cat "\$1"
+    echo "#### end dump \$1"
+  }
+
+  shopt -s globstar nullglob dotglob
   cd /tmp
-  find . -name "*.log" -print0 | xargs -0 cat
+for f in /tmp/*.log  tmp/**/*.log ; do
+  dumplog "\$f"
+done
+
+
   echo "**** end dump logs"
 EOF
 }
