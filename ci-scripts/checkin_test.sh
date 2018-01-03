@@ -22,5 +22,4 @@ gcloud compute ssh "$machine_name" -- bash << EOF
   install/build_development_apache.sh 2.2 prefork
   devel/checkin 
 EOF
-
 # gcloud compute copy-files "${machine_name}:mod_pagespeed/release/*" ~/release/

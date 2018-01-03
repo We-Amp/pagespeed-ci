@@ -164,5 +164,9 @@ export ref
 export branch
 timeout 7200 ./$script
 exit_status=$?
+gcloud compute ssh "$machine_name" -- bash << EOF
+  cd /tmp
+  find . -name "*.log" -print0 | xargs -0 cat
+EOF
 cleanup
 exit $exit_status

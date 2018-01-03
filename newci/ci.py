@@ -104,7 +104,7 @@ class CiWorker(object):
             return False, ""
         json = res.json()
         present = datetime.now()
-        if (present - datetime.strptime(json["commit"]["committer"]["date"], "%Y-%m-%dT%H:%M:%SZ")).days >= 1:
+        if (present - datetime.strptime(json["commit"]["committer"]["date"], "%Y-%m-%dT%H:%M:%SZ")).days >= 7:
             print("commit is too old is too old")
             return False
     
