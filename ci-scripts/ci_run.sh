@@ -186,7 +186,8 @@ export use_rpms
 export machine_name
 export ref
 export branch
-timeout 7200 ./$script
+timeout 20000 ./$script
 exit_status=$?
 cleanup
+echo "exit status $exit_status"
 exit $exit_status
