@@ -33,10 +33,11 @@ keep_machine=false
 machine_name=
 use_existing_machine=false
 script=build_release.sh
+name="noname"
 
 options="$(getopt --long build_branch:,centos,delete_existing_machine \
   --long image_family:,machine_name:,use_existing_machine \
-  --long script:, --long ref:, -o '' -- "$@")"
+  --long name:, --long script:, --long ref:, -o '' -- "$@")"
 if [ $? -ne 0 ]; then
   echo"Usage: $(basename "$0") [options] -- [build_release.sh options]" >&2
   echo "  --build_branch=<branch>    mod_pagespeed branch to build" >&2
@@ -59,6 +60,7 @@ while [ $# -gt 0 ]; do
     --build_branch) branch="$2"; shift 2 ;;
     --script) script="$2"; shift 2 ;;
     --ref) ref="$2"; shift 2 ;;
+    --name) name="$2"; shift 2 ;;
     --centos) image_family="centos-6"; shift ;;
     --delete_existing_machine) delete_existing_machine=true; shift ;;
     --image_family) image_family="$2"; shift 2 ;;
@@ -103,9 +105,9 @@ if [ -z "$machine_name" ]; then
   done
 
   # gcloud is pretty fussy about machine names.
-  sanitized_branch="$(tr _ - <<< "$branch" | tr -d . | cut -c 1-20)"
+  sanitized_branch="$(tr _ - <<< "$branch" | tr -d . | cut -c 1-10)"
   
-  machine_name="${USER}-ci-${image_family}${bit_suffix}"
+  machine_name="${USER}-ci-${name}-${image_family}${bit_suffix}"
   machine_name+="-${sanitized_branch}-mps-build${bit_suffix}"
 fi
 
@@ -123,7 +125,7 @@ gcloud config set compute/zone us-east1-c
 if [ -z "$instances" ] || ! $use_existing_machine; then
   gcloud compute instances create "$machine_name" \
 	 --image-family="$image_family" --image-project="$image_project" \
-         --custom-cpu=2 --custom-memory=4GB \
+         --custom-cpu=2 --custom-memory=6GB \
 	 --boot-disk-type=pd-ssd
 fi
 
@@ -139,8 +141,8 @@ function savelog {
   }
 
   shopt -s globstar nullglob dotglob
-  cd /tmp
-for f in /tmp/*.log  tmp/**/*.log ; do
+cd /tmp
+for f in \$(find . | grep .log) ; do
   dumplog "\$f"
 done
 

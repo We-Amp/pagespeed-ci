@@ -27,8 +27,7 @@ API_TOKEN=""
 
 class CiWorker(object):
     """ CI Worker doc """
-    def __init__(self, busy_key, outdir, template, test, repo, commit, ref, delegate):
-        self.template = template
+    def __init__(self, busy_key, outdir, test, repo, commit, ref, delegate):
         self.test = test
         self.outdir = outdir
         self.script = test["script"]
@@ -133,7 +132,7 @@ class CiWorker(object):
 
     def set_status(self, state):
         """ udpate the status files, and github if applicable """
-        key = "%s-%s" % (self.template, self.test["name"])
+        key = "%s" % (self.test["name"])
         touch("%s/%s.%s" % (self.outdir, key, state))
         print('touch("%s/%s.%s")' % (self.outdir, key, state))
 
@@ -145,7 +144,7 @@ class CiWorker(object):
         if self.commit != self.status_commit:
             git_context_sha = "pr"
 
-        git_context = "pagespeed_ci/%s/%s/%s" % (git_context_sha, self.test["name"], self.template)
+        git_context = "pagespeed_ci/%s/%s" % (git_context_sha, self.test["name"])
         # pending, success, error, or failure
         if state == "queued":
             git_state = "pending"
@@ -171,7 +170,7 @@ class CiWorker(object):
                 print("status updated failed for url %s (%s)" % (url, res.status_code))
 
     def already_ran(self):
-        key = "%s-%s" % (self.template, self.test["name"])
+        key = "%s" % (self.test["name"])
         return os.path.exists("%s/%s.success" % (self.outdir, key)) or \
             os.path.exists("%s/%s.fail" % (self.outdir, key)) or \
             os.path.exists("%s/%s.unauth" % (self.outdir, key)) or \
@@ -179,7 +178,7 @@ class CiWorker(object):
 
     def to_str(self):
         """ Returns string representation of the CI worker """
-        return "%s %s %s %s" % (self.template, self.script, self.commit, self.ref)
+        return "%s %s %s" % (self.script, self.commit, self.ref)
 
 def load_configuration(path):
     """ loads the program configuration """
@@ -253,18 +252,16 @@ def git_poll_repo_worker(repos, interval_seconds, ci_out):
                         if not os.path.exists(outdir):
                             os.makedirs(outdir)
                         for test in repo["tests"]:
-                            for template in test["templates"]:
-                                key = "%s-%s-%s-%s" % (repo["id"], template, test["script"], commit)
-                                work_item = CiWorker( \
-                                    key, outdir, template, test, repo, commit, ref, test_runner)
-                                if not work_item.already_ran():
-                                    if key in BUSY_SHAS:
-                                        continue
-                                    else:
-                                        BUSY_SHAS[key] = True
-                                    work_item.set_status("queued")
-                                    WORK_QUEUE.put(work_item)
-
+                            key = "%s-%s-%s" % (repo["id"], test["script"], commit)
+                            work_item = CiWorker(key, outdir, test, repo, commit, ref, test_runner)
+                            if not work_item.already_ran():
+                                if key in BUSY_SHAS:
+                                    continue
+                                else:
+                                    BUSY_SHAS[key] = True
+                                work_item.set_status("queued")
+                                WORK_QUEUE.put(work_item)
+                                    
         time.sleep(interval_seconds)
 
 def setup_git_repo_polling(repos, interval_seconds, ci_out):
@@ -281,7 +278,7 @@ def test_runner(self):
     command = self.script.format(branch=self.commit, ref=self.ref)
     
     print("execute: %s" % command)
-    fs_name = "%s/%s-%s" % (self.outdir, self.template, self.test["name"])
+    fs_name = "%s/%s" % (self.outdir, self.test["name"])
 
     with open("%s.stdin.txt" % fs_name, "w") as fstdin:
         with open("%s.stdout.txt" % fs_name, "w") as fstdout:
