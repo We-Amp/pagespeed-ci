@@ -125,7 +125,8 @@ gcloud config set compute/zone us-east1-c
 if [ -z "$instances" ] || ! $use_existing_machine; then
   gcloud compute instances create "$machine_name" \
 	 --image-family="$image_family" --image-project="$image_project" \
-         --custom-cpu=2 --custom-memory=6GB \
+         --custom-cpu=4 --custom-memory=12GB \
+	 --preemptible \
 	 --boot-disk-type=pd-ssd
 fi
 
@@ -168,6 +169,7 @@ function fail_build {
 trap '[ $? -ne 0 ] && fail_build' EXIT
 
 count=1
+sleep 1
 until gcloud compute ssh "$machine_name" -- bash << EOF
   ls
 EOF
@@ -178,7 +180,7 @@ do
        printf "GCE ssh failed to connect: max retries exceeded: ${count}\n"
        exit 1
   fi
-  sleep 10
+  sleep 2
   ((count++))
 done
 
@@ -186,7 +188,8 @@ export use_rpms
 export machine_name
 export ref
 export branch
-timeout 20000 ./$script
+#timeout 20000
+./$script
 exit_status=$?
 cleanup
 echo "exit status $exit_status"
