@@ -369,6 +369,8 @@ def is_ignored_ref(ref):
     """ Defines some refs that we don't want to handle """
     if ref == "HEAD":
         return True
+    if "refs/tags/" in ref:
+        return True
     if ref.endswith("^{}"):
         return True
     return False
