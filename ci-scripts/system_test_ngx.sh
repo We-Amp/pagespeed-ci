@@ -1,7 +1,7 @@
 gcloud compute ssh "$machine_name" -- bash << EOF
   set -e
   set -x
-  export MAKEFLAGS=-4
+  export MAKEFLAGS=4
   sudo apt-get update -q
   sudo apt-get install -q -y git build-essential zlib1g-dev libpcre3-dev unzip uuid-dev
   git config --global url.https://github.com/apache/.insteadOf git://git.apache.org/
